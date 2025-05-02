@@ -1,15 +1,13 @@
 <?php
-// Configuración de la base de datos
+
 define('DB_HOST', 'localhost');
 define('DB_USER', 'root');
 define('DB_PASS', '');
 define('DB_NAME', 'tienda');
 
-// Configuración de CORS (permite peticiones desde cualquier origen)
 header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json; charset=UTF-8');
 
-// Conexión a la base de datos
 function conectarDB() {
     $conexion = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
     
@@ -25,14 +23,11 @@ function conectarDB() {
     return $conexion;
 }
 
-// Obtener parámetros de consulta
 $categoria = isset($_GET['categoria']) ? $_GET['categoria'] : null;
 $busqueda = isset($_GET['busqueda']) ? $_GET['busqueda'] : null;
 
-// Conectar a la base de datos
 $db = conectarDB();
 
-// Construir la consulta SQL
 $sql = "SELECT * FROM productos";
 $condiciones = [];
 $parametros = [];
@@ -55,7 +50,6 @@ if (!empty($condiciones)) {
     $sql .= " WHERE " . implode(" AND ", $condiciones);
 }
 
-// Preparar y ejecutar la consulta
 $stmt = $db->prepare($sql);
 
 if ($parametros) {
@@ -71,14 +65,11 @@ if (!$stmt->execute()) {
     exit;
 }
 
-// Obtener resultados
 $resultado = $stmt->get_result();
 $productos = $resultado->fetch_all(MYSQLI_ASSOC);
 
-// Cerrar conexión
 $db->close();
 
-// Devolver respuesta
 echo json_encode([
     'estado' => 'éxito',
     'total' => count($productos),
